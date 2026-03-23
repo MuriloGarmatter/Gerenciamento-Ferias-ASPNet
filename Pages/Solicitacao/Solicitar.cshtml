@@ -1,0 +1,67 @@
+﻿@page
+@model GerenciamentoFerias.Pages.Solicitacao.SolicitarModel
+@{
+    ViewData["Title"] = "Nova Solicitação de Férias";
+}
+
+<div class="row justify-content-center mt-4">
+    <div class="col-md-8 col-lg-6">
+        <div class="card p-4">
+            <div class="card-body">
+                <div class="text-center mb-4">
+                    <i class="bi bi-calendar-plus text-primary" style="font-size: 3rem;"></i>
+                    <h2 class="card-title mt-2">Nova Solicitação</h2>
+                    <p class="text-muted">Preencha os dados abaixo para pedir suas férias.</p>
+                </div>
+
+                <div class="alert alert-info d-flex align-items-center mb-4" role="alert">
+                    <i class="bi bi-info-circle-fill me-2 fs-5"></i>
+                    <div>
+                        Seu saldo atual disponível é de: <strong>@Model.SaldoDisponivel dias</strong>.
+                    </div>
+                </div>
+
+                @if (!string.IsNullOrEmpty(Model.Mensagem))
+                {
+                    <div class="alert @(Model.Mensagem.Contains("sucesso") ? "alert-success" : "alert-danger") alert-dismissible fade show" role="alert">
+                        <i class="bi @(Model.Mensagem.Contains("sucesso") ? "bi-check-circle-fill" : "bi-exclamation-triangle-fill") me-2"></i>
+                        @Model.Mensagem
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                }
+
+                <form method="post">
+                    <div class="mb-3">
+                        <label asp-for="DataInicio" class="form-label fw-bold">Data de Início</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-calendar3"></i></span>
+                            <input asp-for="DataInicio" class="form-control form-control-lg" type="date" />
+                        </div>
+                        <span asp-validation-for="DataInicio" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-4">
+                        <label asp-for="QuantidadeDias" class="form-label fw-bold">Quantidade de Dias</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-stopwatch"></i></span>
+                            <input asp-for="QuantidadeDias" class="form-control form-control-lg" type="number" min="1" max="30" placeholder="Ex: 15" />
+                        </div>
+                        <span asp-validation-for="QuantidadeDias" class="text-danger small"></span>
+                        <div class="form-text text-muted">A quantidade deve ser menor ou igual ao seu saldo.</div>
+                    </div>
+
+                    <div class="d-grid gap-2 mt-4">
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            <i class="bi bi-send-fill me-2"></i>Enviar Solicitação
+                        </button>
+                        <a asp-page="/Index" class="btn btn-outline-secondary">Cancelar</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

@@ -1,0 +1,90 @@
+﻿@page
+@model GerenciamentoFerias.Pages.Gestao.IndexModel
+@{
+    ViewData["Title"] = "Gestão de Férias da Equipe";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4 mt-3">
+    <h2><i class="bi bi-people-fill text-success me-2"></i>Solicitações da Equipe</h2>
+    <span class="badge bg-secondary p-2">Aguardando Minha Ação</span>
+</div>
+
+@if (!Model.SolicitacoesPendentes.Any())
+{
+    <div class="card text-center p-5 mt-4">
+        <div class="card-body">
+            <i class="bi bi-check-circle text-success" style="font-size: 4rem;"></i>
+            <h4 class="card-title mt-3">Tudo em dia!</h4>
+            <p class="card-text text-muted">Não há solicitações pendentes de aprovação no momento.</p>
+        </div>
+    </div>
+}
+else
+{
+    <div class="card mt-3">
+        <div class="table-responsive">
+            <table class="table table-hover table-striped align-middle mb-0">
+                <thead class="table-dark">
+                    <tr>
+                        <th class="ps-4">Funcionário</th>
+                        <th>Período</th>
+                        <th>Qtd. Dias</th>
+                        <th>Data Pedido</th>
+                        <th class="text-center">Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var sol in Model.SolicitacoesPendentes)
+                    {
+                        <tr>
+                            <td class="ps-4">
+                                <div class="d-flex align-items-center">
+                                    <i class="bi bi-person-badge fs-4 text-muted me-2"></i>
+                                    <div>
+                                        <div class="fw-bold">@sol.Funcionario?.Nome</div>
+                                        <small class="text-muted">Matrícula: @sol.Funcionario?.Matricula</small>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div>A partir de:</div>
+                                <strong class="text-primary">@sol.DataInicio.ToShortDateString()</strong>
+                            </td>
+                            <td><span class="fs-5 fw-bold">@sol.QuantidadeDias</span> dias</td>
+                            <td>@sol.DataSolicitacao.ToShortDateString()</td>
+                            <td>
+                                <div class="d-flex justify-content-center gap-2 py-2">
+                                    <form method="post" asp-page-handler="Aprovar">
+                                        <input type="hidden" name="id" value="@sol.Id" />
+                                        <button type="submit" class="btn btn-success" title="Aprovar Solicitação">
+                                            <i class="bi bi-check-lg me-1"></i>Aprovar
+                                        </button>
+                                    </form>
+
+                                    <button class="btn btn-danger" type="button" data-bs-toggle="collapse" data-bs-target="#collapseNegar-@sol.Id" aria-expanded="false">
+                                        <i class="bi bi-x-lg me-1"></i>Negar
+                                    </button>
+                                </div>
+
+                                <div class="collapse mt-2" id="collapseNegar-@sol.Id">
+                                    <div class="card card-body bg-light border-danger">
+                                        <form method="post" asp-page-handler="Negar">
+                                            <input type="hidden" name="id" value="@sol.Id" />
+                                            <div class="mb-2">
+                                                <label class="form-label fw-bold text-danger small">Motivo da Recusa (Obrigatório)</label>
+                                                <textarea name="justificativa" class="form-control form-control-sm" rows="2" required placeholder="Digite o motivo..."></textarea>
+                                            </div>
+                                            <div class="d-grid">
+                                                <button type="submit" class="btn btn-outline-danger btn-sm">Confirmar Negação</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+}

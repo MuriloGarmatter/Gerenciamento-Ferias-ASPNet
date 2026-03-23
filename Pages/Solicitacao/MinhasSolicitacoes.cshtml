@@ -1,0 +1,93 @@
+﻿@page
+@model GerenciamentoFerias.Pages.Solicitacao.MinhasSolicitacoesModel
+@{
+    ViewData["Title"] = "Minhas Solicitações";
+}
+
+<h2 class="mb-4">Acompanhamento de Solicitações</h2>
+
+<h4>Meus Pedidos Atuais</h4>
+@if (!Model.MinhasSolicitacoes.Any())
+{
+    <div class="alert alert-info">Você ainda não possui solicitações de férias registradas.</div>
+}
+else
+{
+    <table class="table table-striped mb-5">
+        <thead>
+            <tr>
+                <th>Data Início</th>
+                <th>Qtd. Dias</th>
+                <th>Data do Pedido</th>
+                <th>Status</th>
+                <th>Ação</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var sol in Model.MinhasSolicitacoes)
+            {
+                <tr>
+                    <td class="align-middle">@sol.DataInicio.ToShortDateString()</td>
+                    <td class="align-middle">@sol.QuantidadeDias</td>
+                    <td class="align-middle">@sol.DataSolicitacao.ToShortDateString()</td>
+                    <td class="align-middle">
+                        <span class="badge @(sol.Status == GerenciamentoFerias.Models.StatusSolicitacao.APROVADO ? "bg-success" :
+                                                                           sol.Status == GerenciamentoFerias.Models.StatusSolicitacao.NEGADO ? "bg-danger" :
+                                                                           sol.Status == GerenciamentoFerias.Models.StatusSolicitacao.CANCELADO ? "bg-secondary" :
+                                                                           "bg-warning text-dark")">
+                    @sol.Status
+                </span>
+
+                @if (sol.Status == GerenciamentoFerias.Models.StatusSolicitacao.NEGADO && !string.IsNullOrEmpty(sol.JustificativaNegacao))
+                        {
+                            <small class="d-block text-muted mt-1">Motivo: @sol.JustificativaNegacao</small>
+                        }
+                    </td>
+                    <td class="align-middle">
+                        @if (sol.Status == GerenciamentoFerias.Models.StatusSolicitacao.PENDENTE)
+                        {
+                            <form method="post" asp-page-handler="Cancelar">
+                                <input type="hidden" name="id" value="@sol.Id" />
+                                <button type="submit" class="btn btn-outline-danger btn-sm" onclick="return confirm('Tem certeza que deseja cancelar esta solicitação?');">Cancelar</button>
+                            </form>
+                        }
+                        else
+                        {
+                            <span class="text-muted"><small>Sem ações</small></span>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+<hr />
+
+<h4 class="mt-4">Histórico de Férias Gozadas</h4>
+@if (!Model.MeuHistorico.Any())
+{
+    <div class="alert alert-secondary">Nenhum período de férias registrado no histórico até o momento.</div>
+}
+else
+{
+    <table class="table table-bordered">
+        <thead class="table-light">
+            <tr>
+                <th>Data de Início</th>
+                <th>Data de Retorno</th>
+                <th>Dias Utilizados</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var hist in Model.MeuHistorico)
+            {
+                <tr>
+                    <td>@hist.DataInicio.ToShortDateString()</td>
+                    <td>@hist.DataFim.ToShortDateString()</td>
+                    <td>@hist.QuantidadeDias</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

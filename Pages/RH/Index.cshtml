@@ -1,0 +1,41 @@
+﻿@page
+@model GerenciamentoFerias.Pages.RH.IndexModel
+@{
+    ViewData["Title"] = "Painel do RH - Processamento";
+}
+
+<h2>Solicitações Aprovadas (Aguardando Processamento)</h2>
+
+@if (!Model.SolicitacoesAprovadas.Any())
+{
+    <div class="alert alert-info mt-3">Não há solicitações aprovadas aguardando processamento no momento.</div>
+}
+else
+{
+    <table class="table table-striped mt-3">
+        <thead>
+            <tr>
+                <th>Data Início</th>
+                <th>Qtd. Dias</th>
+                <th>Data da Aprovação</th>
+                <th>Ação</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var sol in Model.SolicitacoesAprovadas)
+            {
+                <tr>
+                    <td class="align-middle">@sol.DataInicio.ToShortDateString()</td>
+                    <td class="align-middle">@sol.QuantidadeDias</td>
+                    <td class="align-middle">@sol.DataSolicitacao.ToShortDateString()</td>
+                    <td>
+                        <form method="post" asp-page-handler="Processar">
+                            <input type="hidden" name="id" value="@sol.Id" />
+                            <button type="submit" class="btn btn-primary btn-sm">Processar Baixa</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
